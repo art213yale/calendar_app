@@ -48,6 +48,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        fontFamily: 'Pretendard', // 기본 폰트 변경
       ),
       home: const CalendarApp(),
     );
@@ -456,7 +457,8 @@ class _CalendarAppState extends State<CalendarApp> {
     return Column(
       children: [
         // 달력 헤더
-        Padding(
+        Container(
+          color: Color(0xFFF5F5DC), // 베이지색 배경색 추가
           padding: const EdgeInsets.all(16.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -470,6 +472,7 @@ class _CalendarAppState extends State<CalendarApp> {
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
+                  fontFamily: 'Pretendard', // 헤더 폰트 변경
                 ),
               ),
               IconButton(
@@ -480,98 +483,113 @@ class _CalendarAppState extends State<CalendarApp> {
           ),
         ),
         // 요일 헤더
-        Row(
-          children: const [
-            Expanded(child: Text('일', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red))),
-            Expanded(child: Text('월', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold))),
-            Expanded(child: Text('화', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold))),
-            Expanded(child: Text('수', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold))),
-            Expanded(child: Text('목', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold))),
-            Expanded(child: Text('금', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold))),
-            Expanded(child: Text('토', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue))),
-          ],
+        Container(
+          color: Color(0xFFF5F5DC), // 베이지색 배경색 추가
+          child: Row(
+            children: const [
+              Expanded(child: Text('일', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red, fontFamily: 'Pretendard'))),
+              Expanded(child: Text('월', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Pretendard'))),
+              Expanded(child: Text('화', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Pretendard'))),
+              Expanded(child: Text('수', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Pretendard'))),
+              Expanded(child: Text('목', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Pretendard'))),
+              Expanded(child: Text('금', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Pretendard'))),
+              Expanded(child: Text('토', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue, fontFamily: 'Pretendard'))),
+            ],
+          ),
         ),
         const SizedBox(height: 8),
         // 달력 그리드
         Expanded(
-          child: GridView.count(
-            crossAxisCount: 7,
-            childAspectRatio: 1.0,
-            children: _getDaysInMonth(_currentMonth).map((date) {
-              final isSameMonth = date.month == _currentMonth.month;
-              final isSelectedDate = date.year == _selectedDate.year &&
-                  date.month == _selectedDate.month &&
-                  date.day == _selectedDate.day;
-              final isToday = date.year == DateTime.now().year &&
-                  date.month == DateTime.now().month &&
-                  date.day == DateTime.now().day;
-              final hasDiary = _hasDiary(date);
+          child: Container(
+            color: Color(0xFFF5F5DC), // 베이지색 배경색 추가
+            child: GridView.count(
+              crossAxisCount: 7,
+              childAspectRatio: 1.0,
+              children: _getDaysInMonth(_currentMonth).map((date) {
+                final isSameMonth = date.month == _currentMonth.month;
+                final isSelectedDate = date.year == _selectedDate.year &&
+                    date.month == _selectedDate.month &&
+                    date.day == _selectedDate.day;
+                final isToday = date.year == DateTime.now().year &&
+                    date.month == DateTime.now().month &&
+                    date.day == DateTime.now().day;
+                final hasDiary = _hasDiary(date);
 
-              // 요일별 색상 설정
-              Color textColor = Colors.black;
-              if (date.weekday == DateTime.sunday) {
-                textColor = Colors.red;
-              } else if (date.weekday == DateTime.saturday) {
-                textColor = Colors.blue;
-              }
+                // 요일별 색상 설정
+                Color textColor = Colors.black;
+                if (date.weekday == DateTime.sunday) {
+                  textColor = Colors.red;
+                } else if (date.weekday == DateTime.saturday) {
+                  textColor = Colors.blue;
+                }
 
-              if (!isSameMonth) {
-                textColor = textColor.withOpacity(0.3);
-              }
+                if (!isSameMonth) {
+                  textColor = textColor.withOpacity(0.3);
+                }
 
-              return GestureDetector(
-                onTap: () {
-                  if (isSameMonth) {
-                    setState(() {
-                      _selectedDate = date;
-                    });
+                return GestureDetector(
+                  onTap: () {
+                    if (isSameMonth) {
+                      setState(() {
+                        _selectedDate = date;
+                      });
 
-                    // 날짜 선택 시 일기 상세 화면으로 이동
-                    _showDiaryDetail(date);
-                  }
-                },
-                child: Container(
-                  margin: const EdgeInsets.all(4.0),
-                  decoration: BoxDecoration(
-                    color: isSelectedDate ? Colors.blue.withOpacity(0.2) : null,
-                    border: isToday ? Border.all(color: Colors.blue, width: 2) : null,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Stack(
-                    children: [
-                      Center(
-                        child: Text(
-                          '${date.day}',
-                          style: TextStyle(
-                            color: textColor,
-                            fontWeight: isSelectedDate || isToday ? FontWeight.bold : FontWeight.normal,
-                          ),
-                        ),
-                      ),
-                      if (hasDiary)
-                        Positioned(
-                          top: 5,
-                          right: 5,
-                          child: Container(
-                            width: 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              color: Colors.green,
-                              shape: BoxShape.circle,
+                      // 날짜 선택 시 일기 상세 화면으로 이동
+                      _showDiaryDetail(date);
+                    }
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.all(4.0),
+                    decoration: BoxDecoration(
+                      color: isSelectedDate ? Colors.blue.withOpacity(0.2) : Colors.white.withOpacity(0.7), // 날짜 셀 배경색 추가
+                      border: isToday ? Border.all(color: Colors.blue, width: 2) : Border.all(color: Colors.grey.withOpacity(0.2)),
+                      borderRadius: BorderRadius.circular(12), // 테두리 둥글게
+                      boxShadow: isSelectedDate ? [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                        )
+                      ] : null,
+                    ),
+                    child: Stack(
+                      children: [
+                        Center(
+                          child: Text(
+                            '${date.day}',
+                            style: TextStyle(
+                              color: textColor,
+                              fontWeight: isSelectedDate || isToday ? FontWeight.bold : FontWeight.normal,
+                              fontSize: 16,
+                              fontFamily: 'Pretendard', // 날짜 폰트 변경
                             ),
                           ),
                         ),
-                    ],
+                        if (hasDiary)
+                          Positioned(
+                            top: 5,
+                            right: 5,
+                            child: Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                color: Colors.green,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            }).toList(),
+                );
+              }).toList(),
+            ),
           ),
         ),
         // 선택된 날짜 정보
         Container(
           padding: const EdgeInsets.all(16.0),
-          color: Colors.grey[200],
+          color: Color(0xFFF5F5DC), // 베이지색 배경색 추가
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -581,20 +599,26 @@ class _CalendarAppState extends State<CalendarApp> {
                   const SizedBox(width: 8),
                   Text(
                     formatDate(_selectedDate),
-                    style: const TextStyle(fontSize: 16),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontFamily: 'Pretendard', // 폰트 변경
+                    ),
                   ),
                 ],
               ),
               ElevatedButton.icon(
                 icon: Icon(Icons.edit),
-                label: Text('일기 작성'),
+                label: Text('일기 작성', style: TextStyle(fontFamily: 'Pretendard')), // 폰트 변경
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
                 onPressed: () {
                   _showDiaryDetail(_selectedDate);
                 },
-
               ),
             ],
-
           ),
         ),
       ],
@@ -852,6 +876,7 @@ class _DiaryDetailPageState extends State<DiaryDetailPage> {
                           style: TextStyle(
                             color: Colors.grey,
                             fontSize: 16,
+                            fontFamily: 'Pretendard',
                           ),
                         ),
                       ),
@@ -948,11 +973,16 @@ class _DiaryDetailPageState extends State<DiaryDetailPage> {
           padding: const EdgeInsets.all(16.0),
           child: ElevatedButton(
             onPressed: _isSaving ? null : _saveDiary,
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 12.0),
               child: Text(
                 _isSaving ? '저장 중...' : '저장하기',
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 16, fontFamily: 'Pretendard'),
               ),
             ),
           ),
@@ -960,14 +990,4 @@ class _DiaryDetailPageState extends State<DiaryDetailPage> {
       ),
     );
   }
-
-
-//  test version add
-
-
-//  test version add
-
-//  test version add
-
-
 }

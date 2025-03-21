@@ -32,9 +32,19 @@ dev_dependencies:
   flutter_lints: ^5.0.0
 
 
-
 flutter:
   uses-material-design: true
+
+  # 아래 부분을 추가합니다
+  assets:
+    - assets/fonts/
+
+  fonts:
+    - family: Pretendard
+      fonts:
+        - asset: assets/fonts/Pretendard-Regular.otf
+        - asset: assets/fonts/Pretendard-Bold.otf
+          weight: 700
 
   # 플랫폼 지원 명시적 설정
 platforms:
